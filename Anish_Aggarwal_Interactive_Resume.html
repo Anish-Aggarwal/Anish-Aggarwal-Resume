@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anish Aggarwal | Interactive Resume</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Slate & Cyan -->
+    <!-- Application Structure Plan: A single-page dashboard design is used to provide a comprehensive yet digestible overview of the candidate's profile. The structure includes a top navigation bar for quick access to key sections: a dynamic career timeline, a visual skills assessment, and impactful achievement cards. This non-linear structure was chosen over a simple document layout to allow recruiters and hiring managers to quickly jump to the information most relevant to them. The interactive timeline, in particular, encourages user engagement by revealing detailed accomplishments on-demand, preventing information overload while highlighting career progression. The entire flow is designed for efficient information discovery. -->
+    <!-- Visualization & Content Choices: 
+        - Career Experience -> Goal: Show progression & detail -> Method: Interactive vertical timeline (HTML/Tailwind/JS) -> Interaction: Click on a role to display its details in a separate pane -> Justification: More engaging and organized than a long, static list. Prevents overwhelming the user with text.
+        - Technical Skills -> Goal: Visualize proficiency across categories -> Method: Horizontal Bar Chart (Chart.js) -> Interaction: Hovering a bar reveals tooltips with specific technologies -> Justification: A chart allows for rapid, comparative assessment of skills, which is more effective than reading a list.
+        - Key Achievements -> Goal: Highlight top metrics for immediate impact -> Method: Large "Stat Cards" (HTML/Tailwind) -> Interaction: Simple hover effects -> Justification: Makes the most impressive, quantifiable results stand out immediately.
+        - Awards -> Goal: Inform about recognitions -> Method: Styled list -> Interaction: None -> Justification: Clear and straightforward presentation for supplementary information.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -31px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            border: 2px solid #0891b2;
+            z-index: 1;
+        }
+        .timeline-item.active::before {
+            background-color: #0891b2;
+            transform: scale(1.2);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-slate-800">Anish Aggarwal</h1>
+                <p class="text-sm md:text-base text-cyan-700 font-medium">Principal Engineer</p>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#journey" class="text-slate-600 hover:text-cyan-600 transition duration-300">Career Journey</a>
+                <a href="#skills" class="text-slate-600 hover:text-cyan-600 transition duration-300">Skills</a>
+                <a href="#impact" class="text-slate-600 hover:text-cyan-600 transition duration-300">Impact</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-6 md:p-12">
+
+        <section class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">Experienced Engineering Leader</h2>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                With over 12.5 years in software development, I specialize in building scalable cloud-native solutions using .NET and AWS. I have a proven history of leading high-performing teams, driving technical excellence, and delivering impactful results that align with business goals.
+            </p>
+        </section>
+
+        <section id="journey" class="mb-20">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-slate-800">Career Journey</h3>
+                <p class="text-slate-500 mt-2">An interactive timeline of my professional experience. Click on a role to see the details.</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+                <div class="md:w-1/3">
+                    <div id="timeline-nav" class="relative pl-5 border-l-2 border-slate-200">
+                    </div>
+                </div>
+                <div id="timeline-content" class="md:w-2/3">
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="mb-20 py-16 bg-white rounded-xl shadow-sm">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-slate-800">Core Competencies</h3>
+                 <p class="text-slate-500 mt-2">A visual representation of my key technical skills and expertise.</p>
+            </div>
+            <div class="chart-container">
+                <canvas id="skillsChart"></canvas>
+            </div>
+        </section>
+
+        <section id="impact" class="mb-16">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold text-slate-800">Quantifiable Impact & Achievements</h3>
+                 <p class="text-slate-500 mt-2">Key metrics and recognitions that highlight my contributions.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition-transform duration-300">
+                    <h4 class="text-4xl font-bold text-cyan-600 mb-2">$150,000</h4>
+                    <p class="font-semibold text-slate-800">Annual Cost Savings</p>
+                    <p class="text-sm text-slate-500">Implemented an inventory management optimization.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition-transform duration-300">
+                    <h4 class="text-4xl font-bold text-cyan-600 mb-2">30%</h4>
+                    <p class="font-semibold text-slate-800">Faster Deployment Time</p>
+                    <p class="text-sm text-slate-500">By automating CI/CD pipelines and processes.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center transform hover:scale-105 transition-transform duration-300">
+                    <h4 class="text-4xl font-bold text-cyan-600 mb-2">25%</h4>
+                    <p class="font-semibold text-slate-800">Reduction in Critical Bugs</p>
+                    <p class="text-sm text-slate-500">Through robust QA and testing frameworks.</p>
+                </div>
+            </div>
+             <div class="bg-white p-8 rounded-lg shadow-md">
+                <h4 class="text-xl font-bold text-slate-800 mb-4">Awards & Recognition</h4>
+                <ul class="space-y-3 text-slate-600">
+                    <li class="flex items-start"><span class="text-cyan-500 mr-3 mt-1">◆</span><span><strong>The Brightest Mind Award:</strong> Recognized for outstanding project contributions at Nagarro (2023 & 2024).</span></li>
+                    <li class="flex items-start"><span class="text-cyan-500 mr-3 mt-1">◆</span><span><strong>GMI Award:</strong> Awarded for being the best in the 2013 .NET batch at Publicis.Sapient.</span></li>
+                    <li class="flex items-start"><span class="text-cyan-500 mr-3 mt-1">◆</span><span><strong>Consistent Recognition:</strong> Acknowledged as a "Go-to Person" for client delivery and excellence across multiple companies.</span></li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="bg-slate-800 text-slate-300 py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p>Anish Aggarwal | anishaggarwal31@gmail.com | (+91) 9654310313</p>
+            <p class="text-sm text-slate-400 mt-2">This interactive resume was generated based on the source document.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const experienceData = [
+                {
+                    id: 'sp',
+                    company: 'S&P Global',
+                    role: 'Associate Director of Technology',
+                    period: 'Aug 2024 - Present',
+                    details: [
+                        'Leading & managing 2 teams on a cutting-edge platform to enhance data quality & governance.',
+                        'Designed and documented a scalable platform architecture, ensuring alignment with business objectives.',
+                        'Automated CI/CD pipelines, resulting in a 30% reduction in deployment time.',
+                        'Championed quality assurance, reducing critical bugs by 25% through robust testing.',
+                        'Mentoring junior developers and fostering a high-performing team environment.',
+                        'Improved system latency by 15% through proactive performance optimization.'
+                    ]
+                },
+                {
+                    id: 'nagarro',
+                    company: 'Nagarro',
+                    role: 'Associate Principal Engineer/Architect',
+                    period: 'Feb 2021 - Jul 2024',
+                    details: [
+                        'Spearheaded the design and deployment of a highly scalable, cloud-native platform for vehicle inventory management.',
+                        'Led two teams of 10 developers each in developing a .NET Core backend on AWS EKS.',
+                        'Architected a resilient system using AWS S3, Lambda, SQS, and SNS for high-volume data ingestion.',
+                        'Implemented Infrastructure as Code (IaC) using Terraform to automate the entire cloud environment.',
+                        'Championed a cost-saving initiative that reduced annual costs by $150,000.'
+                    ]
+                },
+                {
+                    id: 'ihs',
+                    company: 'IHS Markit',
+                    role: 'Senior Software Engineer',
+                    period: 'Sept 2020 - Jan 2021',
+                    details: [
+                        'Migrated a monolithic application to a microservices architecture with a C# ASP.NET Core backend on AWS.',
+                        'Improved application scalability and maintainability through modern architectural patterns.',
+                        'Developed and optimized APIs for a large-scale financial application, ensuring high performance.'
+                    ]
+                },
+                {
+                    id: 'fiserv',
+                    company: 'Fiserv',
+                    role: 'Sr Software Engineer, Architecture Dept',
+                    period: 'Nov 2018 - Sept 2020',
+                    details: [
+                        'Contributed to a core framework team creating a base product with a pluggable architecture.',
+                        'Enabled rapid product extension and customization for various client and internal needs.',
+                        'Implemented core security and user management features like Forgot Password.',
+                        'Participated in system design reviews with a focus on security and performance.'
+                    ]
+                },
+                {
+                    id: 'sapient',
+                    company: 'Publicis.Sapient',
+                    role: 'Track Lead/Senior Software Engineer',
+                    period: 'July 2013 - Oct 2018',
+                    details: [
+                        'Led a project release team of 6 members.',
+                        'Conducted code reviews and implemented best practices to ensure production-ready code.',
+                        'Developed configurable SQL jobs for data archiving and improved database performance with a DB partitioning strategy.'
+                    ]
+                }
+            ];
+
+            const timelineNav = document.getElementById('timeline-nav');
+            const timelineContent = document.getElementById('timeline-content');
+
+            experienceData.forEach((job, index) => {
+                const navItem = document.createElement('div');
+                navItem.className = `timeline-item relative p-3 cursor-pointer rounded-lg transition-all duration-300 mb-2 ${index === 0 ? 'active text-cyan-700 font-semibold' : 'hover:bg-slate-100'}`;
+                navItem.dataset.id = job.id;
+                navItem.innerHTML = `
+                    <h4 class="text-base font-medium">${job.role}</h4>
+                    <p class="text-sm text-slate-500">${job.company}</p>
+                    <p class="text-xs text-slate-400">${job.period}</p>
+                `;
+                timelineNav.appendChild(navItem);
+
+                const contentItem = document.createElement('div');
+                contentItem.id = job.id;
+                contentItem.className = `bg-white p-6 rounded-lg shadow-md ${index !== 0 ? 'hidden' : ''}`;
+                contentItem.innerHTML = `
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">${job.role} at ${job.company}</h3>
+                    <p class="text-sm text-slate-400 mb-4">${job.period}</p>
+                    <ul class="space-y-2 text-slate-600">
+                        ${job.details.map(d => `<li class="flex items-start"><span class="text-cyan-500 mr-3 mt-1.5">&#10148;</span>${d}</li>`).join('')}
+                    </ul>
+                `;
+                timelineContent.appendChild(contentItem);
+            });
+
+            timelineNav.addEventListener('click', (e) => {
+                const targetNavItem = e.target.closest('.timeline-item');
+                if (!targetNavItem) return;
+
+                const targetId = targetNavItem.dataset.id;
+
+                timelineNav.querySelectorAll('.timeline-item').forEach(item => {
+                    item.classList.remove('active', 'text-cyan-700', 'font-semibold');
+                    item.classList.add('hover:bg-slate-100');
+                });
+
+                targetNavItem.classList.add('active', 'text-cyan-700', 'font-semibold');
+                targetNavItem.classList.remove('hover:bg-slate-100');
+
+                timelineContent.querySelectorAll('div').forEach(content => {
+                    if (content.id === targetId) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+            });
+
+            const skillsData = {
+                labels: ['Cloud & DevOps', 'Backend Development', 'Architecture', 'Databases', 'Frontend & Tooling'],
+                datasets: [{
+                    label: 'Years of Experience / Proficiency',
+                    data: [10, 12, 10, 11, 7],
+                    backgroundColor: 'rgba(14, 165, 233, 0.2)',
+                    borderColor: 'rgba(8, 145, 178, 1)',
+                    borderWidth: 2,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.7,
+                }]
+            };
+
+            const skillsChartCtx = document.getElementById('skillsChart').getContext('2d');
+            new Chart(skillsChartCtx, {
+                type: 'bar',
+                data: skillsData,
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: '#0f172a',
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 12 },
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const value = context.raw;
+                                    const category = context.label;
+                                    let tech = '';
+                                    if (category === 'Cloud & DevOps') tech = 'AWS, Terraform, Kubernetes, Docker';
+                                    if (category === 'Backend Development') tech = '.NET Core, C#, Web API';
+                                    if (category === 'Architecture') tech = 'Microservices, Event-Driven, CQRS';
+                                    if (category === 'Databases') tech = 'MSSQL, DynamoDB';
+                                    if (category === 'Frontend & Tooling') tech = 'JavaScript, React, Angular, Git';
+                                    return `Key Tech: ${tech}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e2e8f0'
+                            },
+                            ticks: {
+                                color: '#475569',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#334155',
+                                font: {
+                                    size: 14,
+                                    weight: '500'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
